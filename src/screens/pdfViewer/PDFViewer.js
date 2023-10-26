@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, Text, View, Dimensions, TextInput , TouchableOpacity, ScrollView} from 'react-native';
+import React, {useRef, useState} from 'react';
 import Pdf from 'react-native-pdf';
 import Animated, {
   interpolate,
@@ -11,14 +11,16 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { rspF3 } from '../../App';
+import { act_hg, rspF, rspH, rspW, scrn_height, scrn_width } from '../../theme/responsive';
 
-const PDFViewer = () => {
+const PDFViewer = ({route}) => {
+
+  const { path } = route?.params?.item
+
   const [totalPages, settotalPages] = useState(0);
   const [currentPage, setcurrentPage] = useState(0);
-
   const animatedPageBox = useSharedValue(1);
-
+  
   const fadeOutIn = async () => {
     animatedPageBox.value = 
     withSequence(
@@ -33,9 +35,7 @@ const PDFViewer = () => {
       withTiming(100, {
         duration: 2000,
       }),
-    )
-    )
-    ;
+    ));
   };
 
   const animatedBox = useAnimatedStyle(() => {
@@ -44,24 +44,33 @@ const PDFViewer = () => {
     };
   });
 
+
   return (
-    <View style={styles.container}>
-      <Pdf
-        source={require('../assets/docs/sample.pdf')}
+    
+      <View>
+
+      <Pdf      
+        source= {{ uri: path, cache: true }}
         trustAllCerts={false}
         enablePaging
         horizontal
-        
         onLoadComplete={(numberOfPages, filePath) => {
           settotalPages(numberOfPages);
           console.log(`Number of pages: ${numberOfPages}`);
         }}
+
+        onPageSingleTap={()=>{
+          console.log("Single Tap")
+          fadeOutIn()
         
+        }}
+      
         onPageChanged={(page, numberOfPages) => {
           setcurrentPage(page);
           fadeOutIn()
           console.log(`Current page: ${page}`);
         }}
+
         onError={error => {
           console.log(error);
         }}
@@ -71,10 +80,13 @@ const PDFViewer = () => {
         style={styles.pdf}
       />
 
+
       <Animated.View style={[styles.pageCon,animatedBox]}>
         <Text style={styles.pageTxt}>{`${currentPage} of ${totalPages}`}</Text>
       </Animated.View>
-    </View>
+
+      </View>
+
   );
 };
 
@@ -85,26 +97,40 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // marginTop: 25,
   },
   pdf: {
-    flex: 1,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: scrn_width,
+    height: act_hg,
   },
   pageCon: {
     position: 'absolute',
-    bottom: Dimensions.get('window').height / 20,
+    bottom: rspH(4),
+    // right: rspW(4),
+    alignSelf:'center',
     backgroundColor: '#00000070',
     width: Dimensions.get('window').width / 4,
-    height: Dimensions.get('window').height / 20,
+    height: rspH(4.6),
+    borderRadius: Dimensions.get('window').height / 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pageRedCon: {
+    position: 'absolute',
+    left: rspW(6),
+    top: rspH(4),
+    backgroundColor: '#00000070',
+    width: rspW(40),
+    height: rspH(4.6),
+    flexDirection:'row',
     borderRadius: Dimensions.get('window').height / 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pageTxt: {
-    fontSize: rspF3(1),
+    fontSize: rspF(1),
+    lineHeight: rspF(1.4),
     textAlign: 'center',
     color: '#fff',
   },
+  
 });
