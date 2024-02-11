@@ -26,9 +26,9 @@ const App = () => {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can read');
+        // console.log('You can read');
       } else {
-        console.log('Read permission denied');
+        // console.log('Read permission denied');
       }
     } catch (err) {
       console.warn(err);

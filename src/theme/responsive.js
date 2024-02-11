@@ -3,8 +3,6 @@ import { initialWindowMetrics } from "react-native-safe-area-context";
 
 const insets = initialWindowMetrics.insets;
 
-
-
 const {width , height} = Dimensions.get('screen')
 
 

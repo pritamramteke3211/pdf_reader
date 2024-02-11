@@ -56,11 +56,11 @@ const PDFViewer = ({route}) => {
         horizontal
         onLoadComplete={(numberOfPages, filePath) => {
           settotalPages(numberOfPages);
-          console.log(`Number of pages: ${numberOfPages}`);
+         
         }}
 
         onPageSingleTap={()=>{
-          console.log("Single Tap")
+
           fadeOutIn()
         
         }}
@@ -68,14 +68,13 @@ const PDFViewer = ({route}) => {
         onPageChanged={(page, numberOfPages) => {
           setcurrentPage(page);
           fadeOutIn()
-          console.log(`Current page: ${page}`);
         }}
 
         onError={error => {
-          console.log(error);
+          // console.log(error);
         }}
         onPressLink={uri => {
-          console.log(`Link pressed: ${uri}`);
+          // console.log(`Link pressed: ${uri}`);
         }}
         style={styles.pdf}
       />

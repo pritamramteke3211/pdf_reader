@@ -12,15 +12,14 @@ import randomColorGenerator from '../../utils/randomColor'
 import navigationStrings from '../../config/navigationStrings'
 import PageWrapper from '../../components/PageWrapper'
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler'
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import Animated, { Layout, SlideInLeft, SlideInRight, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import Share from "react-native-share";
 
 
-const Item = ({itm,index, navigation}) => {
 
-  
-  const animation = useSharedValue(0)
-  
+const Item = ({itm,index, navigation,removeItem,SharePDF}) => {
 
+  const animation = useSharedValue(0)  
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (event, ctx) => {
         ctx.startX = animation.value
@@ -28,7 +27,7 @@ const Item = ({itm,index, navigation}) => {
     onActive:(event, ctx)=>{
     
       if (ctx.startX < 0 && ctx.startX >= - 167) {
-        console.log("This 2")
+    
         if (event.translationX > 0 && event.translationX < 170) {
           animation.value = ctx.startX + event.translationX;    
         }
@@ -36,13 +35,13 @@ const Item = ({itm,index, navigation}) => {
       }
       else
       if (event.translationX < 1 && event.translationX > - 167) {
-        console.log("This 1")
+ 
         animation.value = ctx.startX + event.translationX;  
       }
       
     },
     onEnd:(event, ctx)=>{
-      console.log("on end", event.translationX)
+ 
       if (animation.value < -84) {
         animation.value = withTiming(-167)
       }
@@ -60,8 +59,6 @@ const Item = ({itm,index, navigation}) => {
   })
   
  
-  
-    console.log("itm",itm)
    const bg = {backgroundColor: randomColorGenerator()}
         return(
           <GestureHandlerRootView>
@@ -71,7 +68,10 @@ const Item = ({itm,index, navigation}) => {
   
   >
       <Animated.View style={styles.item}
-      
+      layout={Layout.stiffness()}
+      exiting={SlideInRight}
+      entering={SlideInLeft}
+
       >
         
            <Animated.View
@@ -97,7 +97,8 @@ const Item = ({itm,index, navigation}) => {
               {
                 text: "OK",
                 onPress: () => {
-                  console.log("Delete")
+               
+                  removeItem(index)
                 },
               },
             ]);
@@ -120,7 +121,11 @@ const Item = ({itm,index, navigation}) => {
                 />
            </TouchableOpacity>
 
-           <Animated.View
+           <TouchableOpacity
+           activeOpacity={0.5}
+           onPress={()=>{
+            SharePDF(index)
+           }}
            style={{
             flex:1,
             height: '100%',
@@ -136,7 +141,7 @@ const Item = ({itm,index, navigation}) => {
                 name={'share'} 
                 color={colors.green}
                 />
-           </Animated.View>
+           </TouchableOpacity>
            <Animated.View
       
         style={[{
@@ -173,9 +178,12 @@ const Item = ({itm,index, navigation}) => {
      
 
        <View style={{...styles.leftcont,...bg}}>
-                <Text adjustsFontSizeToFit
+                <Text 
+                adjustsFontSizeToFit
                 numberOfLines={1}
-                style={styles.leftcont_txt}>{index + 1}</Text>
+                style={styles.leftcont_txt}>
+                  {index + 1}
+                  </Text>
               </View>
               
               <View
@@ -184,7 +192,7 @@ const Item = ({itm,index, navigation}) => {
                 
                 
                 <Text
-                adjustsFontSizeToFit
+                // adjustsFontSizeToFit
                 style={styles.centercont_txt}
                 numberOfLines={1} 
                 >{itm.name.slice(0,-4)}</Text>
@@ -209,7 +217,7 @@ const MyReadList = ({navigation,route}) => {
     const folderPath = currentPath+'/pdfs'
 
     const uploadPdf = async () =>{
-        console.log("uploadPdf")
+     
         try {
           const result = await DocumentPicker.pick({
             type: [DocumentPicker.types.pdf],
@@ -239,7 +247,7 @@ const MyReadList = ({navigation,route}) => {
           await RNFS.mkdir(folderPath);
         }  
         const all_pdfs = await RNFS.readDir(folderPath);
-        console.log("all_pdfs",all_pdfs.length)
+    
         let pdfsList = [...readlist]     
         let new_pdfs = []
         if (pdfsList.length > 0) {
@@ -249,7 +257,6 @@ const MyReadList = ({navigation,route}) => {
           new_pdfs = all_pdfs
         }
 
-        console.log("new_pdfs",new_pdfs.length)
         if (new_pdfs.length > 0) {
           for (let i = 0; i < new_pdfs.length; i++) {
             const pdf_itm = new_pdfs[i];
@@ -282,6 +289,50 @@ const MyReadList = ({navigation,route}) => {
      
     }
 
+    const removeItem = (itm_idx)=>{
+   
+      console.log("index to remove", itm_idx)
+      let itm = readlist[itm_idx]
+  
+      console.log("itm",itm.path.split("///")[1])
+      
+      let itm_path = itm.path.split("///")[1]
+
+      console.log("itm_path",itm_path)
+    
+
+  RNFS.unlink(itm_path)
+  .then(() => {
+    console.log('FILE DELETED');
+    setreadlist(prev => prev.filter((v,index) => index != itm_idx ))
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+  
+    }
+
+    const SharePDF = async (itm_idx) => {
+
+      let itm = readlist[itm_idx]
+      
+
+        try {
+          const pdfFilePath = itm.path // Replace with the actual path to your PDF file
+    
+          const options = {
+            title: 'Share PDF',
+            url: pdfFilePath,
+            type: 'application/pdf',
+          };
+    
+          await Share.open(options);
+        } catch (error) {
+          console.log('Error sharing PDF:', error);
+        }
+      
+    }
+
 
       useLayoutEffect(() => {
         updateLis()
@@ -296,6 +347,8 @@ const MyReadList = ({navigation,route}) => {
             itm={item}
             index={index}
             navigation={navigation}
+            removeItem={removeItem}
+            SharePDF={SharePDF}
             />
         )
     }
