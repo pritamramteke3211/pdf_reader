@@ -1,12 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Header from './Header'
+import colors from '../theme/colors'
 
 const PageWrapper = ({header="", children, extraStyle={}, back=false}) => {
   return (
     <View
     style={[styles.cont,extraStyle]}
     >
+      <StatusBar
+      backgroundColor={colors.blue}
+      barStyle='dark-content'
+      />
        { 
        header &&
        <Header

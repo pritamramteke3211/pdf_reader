@@ -2,7 +2,7 @@ import { StyleSheet, TextInput,Text, TouchableOpacity, View } from 'react-native
 import React,{useState} from 'react'
 import gStyle from '../styles/gStyle'
 import IoIcon from 'react-native-vector-icons/Ionicons'
-import { rspF, rspW, scrn_width, sizeHUnit } from '../theme/responsive'
+import { rspF, rspH, rspW, scrn_width, sizeHUnit } from '../theme/responsive'
 import colors from '../theme/colors'
 import fontFamily from '../theme/fontFamily'
 import { useNavigation } from '@react-navigation/native'
@@ -64,7 +64,14 @@ const Header = ({title="",back}) => {
       // animatedStyle
     ]}
       >
-        <TextInput style={{width : '85%'}} placeholder={'Search here...'} />
+        <TextInput style={{width : '85%', color: colors.black,
+      paddingHorizontal:rspW(4),  
+      paddingVertical: rspH(0),
+      fontSize: rspF(1),
+      lineHeight: rspF(1.1),
+      }}
+        placeholderTextColor={colors.grey}
+        placeholder={'Search here...'} />
         
       </Animated.View>
         }
@@ -82,7 +89,7 @@ const Header = ({title="",back}) => {
         }}
         style={{position:'absolute', right:rspF(1)}}
         >
-          <View style={{width: rspW(8), height: rspW(8)}}>
+          <View style={{width: rspW(8), height: rspW(8),justifyContent:'center'}}>
             <FAIcon
             name={value == 1 ? 'close' : 'search'}
             size={rspF(1.5)}
