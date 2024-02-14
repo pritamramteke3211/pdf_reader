@@ -1,4 +1,4 @@
-package com.talking_pdf;
+package com.pdf_reader;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

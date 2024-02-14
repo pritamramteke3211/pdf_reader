@@ -1,4 +1,4 @@
-package com.talking_pdf;
+package com.pdf_reader;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

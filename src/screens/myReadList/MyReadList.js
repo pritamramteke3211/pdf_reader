@@ -236,7 +236,7 @@ const MyReadList = ({navigation,route}) => {
           }
          
         } catch (err) {
-          console.log("err", err)
+          // console.log("err", err)
         }
       }
 
@@ -277,13 +277,13 @@ const MyReadList = ({navigation,route}) => {
             pdfsList.push(pdfitm)
              
           }
-          console.log("pdfsList",pdfsList)
+
           setreadlist(pdfsList)
          
         }
    
       } catch (err) {
-        console.log("err while getting pdfs", err)
+        // console.log("err while getting pdfs", err)
       }
      
      
@@ -291,23 +291,16 @@ const MyReadList = ({navigation,route}) => {
 
     const removeItem = (itm_idx)=>{
    
-      console.log("index to remove", itm_idx)
       let itm = readlist[itm_idx]
   
-      console.log("itm",itm.path.split("///")[1])
-      
       let itm_path = itm.path.split("///")[1]
-
-      console.log("itm_path",itm_path)
-    
 
   RNFS.unlink(itm_path)
   .then(() => {
-    console.log('FILE DELETED');
     setreadlist(prev => prev.filter((v,index) => index != itm_idx ))
   })
   .catch((err) => {
-    console.log(err.message);
+    // console.log(err.message);
   });
   
     }
@@ -328,7 +321,7 @@ const MyReadList = ({navigation,route}) => {
     
           await Share.open(options);
         } catch (error) {
-          console.log('Error sharing PDF:', error);
+          // console.log('Error sharing PDF:', error);
         }
       
     }
